@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import locations from '../components/locations'; // ✅ Import the new locations file
 
 function Home() {
   const [workers, setWorkers] = useState([]);
@@ -42,12 +43,11 @@ function Home() {
     setFiltered(filteredList);
   }, [search, type, location, workers]);
 
-  const uniqueLocations = [...new Set(workers.map((w) => w.location))];
   const uniqueTypes = [...new Set(workers.map((w) => w.type))];
 
   return (
     <div style={{ padding: '20px' }}>
-      {/* ✅ Banner Image from public/logo.png */}
+      {/* Banner */}
       <img
         src="/logo.png"
         alt="Banner"
@@ -63,6 +63,7 @@ function Home() {
       <h2>Available Workers</h2>
 
       <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
+        {/* Search by Name */}
         <input
           type="text"
           placeholder="Search by name"
@@ -71,6 +72,7 @@ function Home() {
           style={{ padding: '8px', width: '200px' }}
         />
 
+        {/* Filter by Type */}
         <select
           value={type}
           onChange={(e) => setType(e.target.value)}
@@ -84,20 +86,26 @@ function Home() {
           ))}
         </select>
 
+        {/* Filter by Location with State -> Cities */}
         <select
           value={location}
           onChange={(e) => setLocation(e.target.value)}
           style={{ padding: '8px' }}
         >
           <option value="">All Locations</option>
-          {uniqueLocations.map((loc, i) => (
-            <option key={i} value={loc}>
-              {loc}
-            </option>
+          {Object.entries(locations).map(([state, cities]) => (
+            <optgroup key={state} label={state}>
+              {cities.map((city) => (
+                <option key={city} value={city}>
+                  {city}
+                </option>
+              ))}
+            </optgroup>
           ))}
         </select>
       </div>
 
+      {/* Display Workers */}
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '15px' }}>
         {filtered.map((worker) => (
           <div
