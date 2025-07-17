@@ -47,11 +47,17 @@ function Home() {
 
   return (
     <div style={{ padding: '20px' }}>
-      {/* ✅ Banner Image */}
+      {/* ✅ Banner Image from public/logo.png */}
       <img
         src="/logo.png"
         alt="Banner"
-        style={{ width: '100%', maxHeight: '400px', objectFit: 'cover', marginBottom: '20px', borderRadius: '8px' }}
+        style={{
+          width: '100%',
+          maxHeight: '400px',
+          objectFit: 'cover',
+          marginBottom: '20px',
+          borderRadius: '8px',
+        }}
       />
 
       <h2>Available Workers</h2>
