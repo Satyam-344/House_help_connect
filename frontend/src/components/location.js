@@ -1,6 +1,7 @@
 const locations = {
   Bihar: ['Patna', 'Gaya'],
   Delhi: ['New Delhi', 'Dwarka'],
-  // Add more...
+  // Add more
 };
+
 export default locations;
