@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import locations from '../components/locations'; // ✅ Import the new locations file
+import locations from '../components/location'; // Ensure this file exports the location map
 
 function Home() {
   const [workers, setWorkers] = useState([]);
@@ -8,6 +8,8 @@ function Home() {
   const [search, setSearch] = useState('');
   const [type, setType] = useState('');
   const [location, setLocation] = useState('');
+  const [states, setStates] = useState([]);
+  const [cities, setCities] = useState([]);
 
   useEffect(() => {
     const fetchWorkers = async () => {
@@ -19,8 +21,8 @@ function Home() {
         console.error('Error fetching workers:', err);
       }
     };
-
     fetchWorkers();
+    setStates(Object.keys(locations));
   }, []);
 
   useEffect(() => {
@@ -43,88 +45,60 @@ function Home() {
     setFiltered(filteredList);
   }, [search, type, location, workers]);
 
-  const uniqueTypes = [...new Set(workers.map((w) => w.type))];
+  const handleStateChange = (e) => {
+    const selectedState = e.target.value;
+    setCities(locations[selectedState] || []);
+    setLocation('');
+  };
 
   return (
-    <div style={{ padding: '20px' }}>
-      {/* Banner */}
-      <img
-        src="/logo.png"
-        alt="Banner"
-        style={{
-          width: '100%',
-          maxHeight: '400px',
-          objectFit: 'cover',
-          marginBottom: '20px',
-          borderRadius: '8px',
-        }}
+    <div>
+      <h1>Find Workers</h1>
+
+      <input
+        type="text"
+        placeholder="Search by name"
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
       />
 
-      <h2>Available Workers</h2>
+      <select value={type} onChange={(e) => setType(e.target.value)}>
+        <option value="">All Types</option>
+        <option value="maid">Maid</option>
+        <option value="cook">Cook</option>
+        <option value="caretaker">Caretaker</option>
+        {/* Add more if needed */}
+      </select>
 
-      <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
-        {/* Search by Name */}
-        <input
-          type="text"
-          placeholder="Search by name"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          style={{ padding: '8px', width: '200px' }}
-        />
-
-        {/* Filter by Type */}
-        <select
-          value={type}
-          onChange={(e) => setType(e.target.value)}
-          style={{ padding: '8px' }}
-        >
-          <option value="">All Types</option>
-          {uniqueTypes.map((t, i) => (
-            <option key={i} value={t}>
-              {t}
-            </option>
-          ))}
-        </select>
-
-        {/* Filter by Location with State -> Cities */}
-        <select
-          value={location}
-          onChange={(e) => setLocation(e.target.value)}
-          style={{ padding: '8px' }}
-        >
-          <option value="">All Locations</option>
-          {Object.entries(locations).map(([state, cities]) => (
-            <optgroup key={state} label={state}>
-              {cities.map((city) => (
-                <option key={city} value={city}>
-                  {city}
-                </option>
-              ))}
-            </optgroup>
-          ))}
-        </select>
-      </div>
-
-      {/* Display Workers */}
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '15px' }}>
-        {filtered.map((worker) => (
-          <div
-            key={worker._id}
-            style={{
-              border: '1px solid #ccc',
-              padding: '15px',
-              width: '250px',
-              borderRadius: '8px',
-              background: '#f9f9f9',
-            }}
-          >
-            <h3>{worker.name}</h3>
-            <p><strong>Type:</strong> {worker.type}</p>
-            <p><strong>Location:</strong> {worker.location}</p>
-            <p><strong>Phone:</strong> {worker.phone}</p>
-          </div>
+      <select onChange={handleStateChange}>
+        <option value="">Select State</option>
+        {states.map((state) => (
+          <option key={state} value={state}>
+            {state}
+          </option>
         ))}
-      </div>
+      </select>
+
+      <select
+        value={location}
+        onChange={(e) => setLocation(e.target.value)}
+        disabled={!cities.length}
+      >
+        <option value="">Select City</option>
+        {cities.map((city) => (
+          <option key={city} value={city}>
+            {city}
+          </option>
+        ))}
+      </select>
+
+      <ul>
+        {filtered.map((worker) => (
+          <li key={worker._id}>
+            {worker.name} - {worker.type} - {worker.location}
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
